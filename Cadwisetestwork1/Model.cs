@@ -16,14 +16,11 @@ namespace Cadwisetestwork1
 {
     public class Parser : INotifyPropertyChanged
     {
-        string path;
-        public string Path { get { return path; } set { path = value; OnPropertyChanged("Path"); } }
-        string outPath;
-        string sights;
+        string path, outPath, sights;
         int minLen = 0;
-        bool del;
-        bool rep;
+        bool del, rep;
         double progress;
+        public string Path { get { return path; } set { path = value; OnPropertyChanged("Path"); } }
         public double Progress { get { return progress; } set { progress = value; OnPropertyChanged("Progress"); } }
         public Parser(string path, string outpath, string sights, int minlen, bool del, bool rep)
         {

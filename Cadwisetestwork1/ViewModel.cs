@@ -92,10 +92,7 @@ namespace Cadwisetestwork1
                 {
                     Parsers.Add(new Parser(Path, OutPath, sights, Len, Del, Rep));
                     Path = OutPath = null;
-                    if(Parsers.Last().Start() == false)
-                    {
-                        MessageBox.Show("Выберите файл источник и файл приемник");
-                    }
+                    Parsers.Last().Start();
                     wnd.Close();
                 });
             }

@@ -10,7 +10,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media.Media3D;
 
 namespace Cadwisetestwork1
 {
@@ -31,17 +33,9 @@ namespace Cadwisetestwork1
             this.del = del;
             this.rep = rep;
         }
-        public bool Start()
+        public void Start() 
         {
-            if (Path == null || outPath == null || sights == null)
-            {
-                return false;
-            }
-            else
-            {
-                var t = Task.Run(() => Do_work()); //ждать не будем
-                return true;
-            }
+            Task.Run(() => Do_work()); //ждать не будем    
         }
         //private void Do_work_stream() //жирный, медленный, но рабочий метод
         //{
@@ -63,7 +57,7 @@ namespace Cadwisetestwork1
         //            {
         //                sw.Write(word, 0, word.Length);
         //            }
-        //            if((char)tmp == '\n')
+        //            if ((char)tmp == '\n')
         //            {
         //                sw.Write('\n');
         //            }
@@ -88,7 +82,8 @@ namespace Cadwisetestwork1
         //}
         //private bool EndOfWorld(char ch, string str)
         //{
-        //    foreach (char i in str) { if (ch == i) return true; } return false;
+        //    foreach (char i in str) { if (ch == i) return true; }
+        //    return false;
         //}
         private void Do_work() 
         {
@@ -100,14 +95,21 @@ namespace Cadwisetestwork1
                 File.Delete(outPath);
             }
             using FileStream opt = File.Open(outPath, FileMode.Create);
-            
             while (true)
             {
                 Progress = 100 * (double)file.Position / file.Length;
                 int tmp = file.ReadByte();
-                var ch = () => { foreach (char i in sights) { if (tmp == i) return true; } return false; };
                 cnt++;
-                if (tmp == ' ' || ch() || tmp == -1 || tmp == '\n')
+                bool sight = false;
+                foreach (char i in sights)
+                {
+                    if (tmp == i)
+                    {
+                        sight = true;
+                        break;
+                    }
+                }
+                if (tmp == ' ' || sight || tmp == -1 || tmp == '\n')
                 {
                     int tmpLen = minLen * mpl;
                     if (cnt < tmpLen && tmpLen > 0 && cnt != 1)
@@ -117,7 +119,7 @@ namespace Cadwisetestwork1
                     }
                     cnt = 0;
                 }
-                if (ch() && del)
+                if (sight && del)
                 {
                     if (rep)
                     {
@@ -136,9 +138,9 @@ namespace Cadwisetestwork1
                 else if (((byte)tmp & 0xE0) == 0xC0) mpl = 2;
                 else if (((byte)tmp & 0xF0) == 0xE0) mpl = 3;
                 else if (((byte)tmp & 0xF8) == 0xF0) mpl = 4;
-                if (tmp == -1) 
+                if (tmp == -1)
                 {
-                    opt.SetLength(opt.Position -1);
+                    opt.SetLength(opt.Position - 1);
                     return;
                 }
             }

@@ -22,7 +22,7 @@ namespace Cadwisetestwork1
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ViewModel();
+            DataContext = new ViewModelMain();
         }  
     }
 }

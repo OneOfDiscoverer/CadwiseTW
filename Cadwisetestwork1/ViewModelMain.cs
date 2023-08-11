@@ -15,23 +15,22 @@ using System.Windows.Shapes;
 
 namespace Cadwisetestwork1
 {
-    public class ViewModel: INotifyPropertyChanged
+    public class ViewModelMain: INotifyPropertyChanged
     {
-        Window1 wnd;
+        Options wnd;
         public int Len { get; set; } = 0;
-        bool del, rep;
-        public bool Del { get { return del; } set { del = value; DelSet = del; OnPropertyChanged("DelSet"); OnPropertyChanged("Rep"); } }
-        public bool DelSet { get; set; }
-        public bool Rep { get { return rep & del; } set { rep = value; } }
+        bool deleteSet, replaceSet;
+        public bool DeleteSet { get { return deleteSet; } set { deleteSet = value; OnPropertyChanged("DeleteSet"); OnPropertyChanged("ReplaceSet"); } }
+        public bool ReplaceSet { get { return replaceSet & deleteSet; } set { replaceSet = value; } }
         public string sights = ";.,:-";
         public string Sights { get { return sights; } set { sights = value; OnPropertyChanged("Sights"); } }
         public bool startSet = false;
         public bool StartSet { get { return startSet; } set { startSet = value; OnPropertyChanged("StartSet"); } }
-        public string? path = null, outpath = null;
-        public string? Path { get { return path; } set { path = value; if (outpath != null) StartSet = true; else StartSet = false; OnPropertyChanged("Path"); } }
-        public string? OutPath { get { return outpath; } set { outpath = value; if (path != null) StartSet = true; else StartSet = false; OnPropertyChanged("Path"); } }
+        //public string? path = null, outpath = null;
+        //public string? Path { get { return path; } set { path = value; if (outpath != null) StartSet = true; else StartSet = false; OnPropertyChanged("Path"); } }
+        //public string? OutPath { get { return outpath; } set { outpath = value; if (path != null) StartSet = true; else StartSet = false; OnPropertyChanged("Path"); } }
         public ObservableCollection<Parser> Parsers { get; set; }
-        public ViewModel()
+        public ViewModelMain()
         {
             Parsers = new ObservableCollection<Parser>();
         }
@@ -41,7 +40,7 @@ namespace Cadwisetestwork1
             {
                 return new RelayCommand(obj =>
                 {
-                    wnd = new Window1(this);
+                    wnd = new Options(this);
                     wnd.Show();
                 });
             }
@@ -51,13 +50,7 @@ namespace Cadwisetestwork1
             get
             {
                 return new RelayCommand(obj =>
-                { 
-                    var OpenDialog = new Microsoft.Win32.OpenFileDialog();
-                    OpenDialog.Filter = "Text documents (.txt)|*.txt";
-                    if (OpenDialog.ShowDialog() == true)
-                    {
-                        Path = OpenDialog.FileName;
-                    }
+                {
                 });
             }
         }
@@ -67,20 +60,6 @@ namespace Cadwisetestwork1
             {
                 return new RelayCommand(obj =>
                 {
-                    var SaveDialog = new Microsoft.Win32.SaveFileDialog();
-                    SaveDialog.Filter = "Text documents (.txt)|*.txt";
-                    if (SaveDialog.ShowDialog() == true)
-                    {
-                        if (SaveDialog.FileName == Path)
-                        {
-                            MessageBox.Show("Файл источник должен отличаться от файла назначения");
-                        }
-                        else
-                        {
-                            OutPath = SaveDialog.FileName;
-                        }
-
-                    }
                 });
             }
         }
@@ -90,7 +69,8 @@ namespace Cadwisetestwork1
             {
                 return new RelayCommand(obj =>
                 {
-                    Parsers.Add(new Parser(Path, OutPath, sights, Len, Del, Rep));
+
+                    Parsers.Add(parser);
                     Path = OutPath = null;
                     Parsers.Last().Start();
                     wnd.Close();

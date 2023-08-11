@@ -17,9 +17,9 @@ namespace Cadwisetestwork1
     /// <summary>
     /// Логика взаимодействия для Window1.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class Options : Window
     {
-        public Window1(ViewModel obj)
+        public Options(ViewModelMain obj)
         {
             InitializeComponent();
             DataContext = obj;

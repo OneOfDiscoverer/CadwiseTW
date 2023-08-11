@@ -20,71 +20,49 @@ namespace Cadwisetestwork1
     {
         string path, outPath, sights;
         int minLen = 0;
-        bool del, rep;
+        bool setDelite, setReplace;
         double progress;
+        public bool Ready { get; private set; }
         public string Path { get { return path; } set { path = value; OnPropertyChanged("Path"); } }
         public double Progress { get { return progress; } set { progress = value; OnPropertyChanged("Progress"); } }
-        public Parser(string path, string outpath, string sights, int minlen, bool del, bool rep)
+        public Parser() // string path, string outpath, string sights, int minlen, bool del, bool rep)
         {
-            this.Path = path;
-            this.outPath = outpath;
-            this.sights = sights;
-            this.minLen = minlen;
-            this.del = del;
-            this.rep = rep;
+            //this.Path = path;
+            //this.outPath = outpath;
+            //this.sights = sights;
+            //this.minLen = minlen;
+            //this.setDelite = del;
+            //this.setReplace = rep;
         }
         public void Start() 
         {
-            Task.Run(() => Do_work()); //ждать не будем    
+            Task.Run(() => Do_work());
         }
-        //private void Do_work_stream() //жирный, медленный, но рабочий метод
-        //{
-        //    using StreamReader sr = File.OpenText(path);
-        //    if (File.Exists(outPath))
-        //    {
-        //        File.Delete(outPath);
-        //    }
-        //    using StreamWriter sw = File.CreateText(outPath);
-        //    string word = "";
-        //    while (true)
-        //    {
-        //        int tmp = sr.Read();
-        //        Progress = 100 * (double)sr.BaseStream.Position / sr.BaseStream.Length;
-        //        var ch = () => { foreach (char i in sights) { if (tmp == i) return true; } return false; };
-        //        if (EndOfWorld((char)tmp, sights + ' ' + '\n'))
-        //        {
-        //            if (word.Length >= minLen && minLen > 0)
-        //            {
-        //                sw.Write(word, 0, word.Length);
-        //            }
-        //            if ((char)tmp == '\n')
-        //            {
-        //                sw.Write('\n');
-        //            }
-        //            word = "";
-        //        }
-        //        if (ch() && del)
-        //        {
-        //            //if (rep)
-        //            //{
-        //            //    word += ' ';
-        //            //}
-        //        }
-        //        else
-        //        {
-        //            word += (char)tmp;
-        //        }
-        //        if (tmp == -1)
-        //        {
-        //            return;
-        //        }
-        //    }
-        //}
-        //private bool EndOfWorld(char ch, string str)
-        //{
-        //    foreach (char i in str) { if (ch == i) return true; }
-        //    return false;
-        //}
+        public void OpenSource()
+        {
+            var OpenDialog = new Microsoft.Win32.OpenFileDialog();
+            OpenDialog.Filter = "Text documents (.txt)|*.txt";
+            if (OpenDialog.ShowDialog() == true)
+            {
+                path = OpenDialog.FileName;
+            }
+        }
+        public void OpenDest()
+        {
+            var SaveDialog = new Microsoft.Win32.SaveFileDialog();
+            SaveDialog.Filter = "Text documents (.txt)|*.txt";
+            if (SaveDialog.ShowDialog() == true)
+            {
+                if (SaveDialog.FileName == Path)
+                {
+                    MessageBox.Show("Файл источник должен отличаться от файла назначения");
+                }
+                else
+                {
+                    outPath = SaveDialog.FileName;
+                }
+            }
+        }
         private void Do_work() 
         {
             int cnt = 0, mpl = 1;
@@ -111,7 +89,7 @@ namespace Cadwisetestwork1
                 }
                 if (tmp == ' ' || sight || tmp == -1 || tmp == '\n')
                 {
-                    int tmpLen = minLen * mpl;
+                    int tmpLen = minLen * mpl + 1;
                     if (cnt < tmpLen && tmpLen > 0 && cnt != 1)
                     {
                         opt.Seek(-cnt + 1, SeekOrigin.Current);
@@ -119,9 +97,9 @@ namespace Cadwisetestwork1
                     }
                     cnt = 0;
                 }
-                if (sight && del)
+                if (sight && setDelite)
                 {
-                    if (rep)
+                    if (setReplace)
                     {
                         opt.WriteByte((byte)' ');
                     }

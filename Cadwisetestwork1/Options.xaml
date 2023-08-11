@@ -1,4 +1,4 @@
-﻿<Window x:Class="Cadwisetestwork1.Window1"
+﻿<Window x:Class="Cadwisetestwork1.Options"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -16,8 +16,8 @@
                 <TextBox Name="Sights" Text="{Binding Sights}" Width="50" Margin="0,0,5,0" Height="20"></TextBox>
                 <TextBlock Text="Знаки препинания"></TextBlock>
             </StackPanel>
-            <CheckBox Name="Del" Height="20" Margin="0, 5, 0, 0" IsChecked="{Binding Del}" Content="Удалить знаки препинания"></CheckBox>
-            <CheckBox Name="Rep" Height="20" Margin="0, 5, 0, 0" IsEnabled="{Binding DelSet}" IsChecked="{Binding Rep}" Content="Заменить знаки препинания пробелом"></CheckBox>
+            <CheckBox Name="Del" Height="20" Margin="0, 5, 0, 0" IsChecked="{Binding DeleteSet}" Content="Удалить знаки препинания"></CheckBox>
+            <CheckBox Name="Rep" Height="20" Margin="0, 5, 0, 0" IsEnabled="{Binding DeleteSet}" IsChecked="{Binding ReplaceSet}" Content="Заменить знаки препинания пробелом"></CheckBox>
             <StackPanel Orientation="Horizontal">
                 <Button Height="20" Width="100" Margin="0,0,5,0" Content="Входной файл" Command="{Binding Source}"></Button>
                 <Button Height="20" Width="100" Margin="0,0,5,0" Content="Выходной файл" Command="{Binding OutFile}"></Button>

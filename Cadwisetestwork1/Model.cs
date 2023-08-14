@@ -12,56 +12,74 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Windows.Shapes;
 
 namespace Cadwisetestwork1
 {
-    public class Parser : INotifyPropertyChanged
+    static class MainCollection
     {
-        string path, outPath, sights;
-        int minLen = 0;
-        bool setDelite, setReplace;
-        double progress;
-        public bool Ready { get; private set; }
-        public string Path { get { return path; } set { path = value; OnPropertyChanged("Path"); } }
-        public double Progress { get { return progress; } set { progress = value; OnPropertyChanged("Progress"); } }
-        public Parser() // string path, string outpath, string sights, int minlen, bool del, bool rep)
+        public static ObservableCollection<Parser> parsers = new ObservableCollection<Parser>();
+    }
+    static class Common
+    {
+        static Options? options;
+        public static void Opener()
         {
-            //this.Path = path;
-            //this.outPath = outpath;
-            //this.sights = sights;
-            //this.minLen = minlen;
-            //this.setDelite = del;
-            //this.setReplace = rep;
+            if (options == null)
+            {
+                options = new Options();
+                options.Show();
+            }
         }
-        public void Start() 
-        {
-            Task.Run(() => Do_work());
-        }
-        public void OpenSource()
+        public static string? OpenSource()
         {
             var OpenDialog = new Microsoft.Win32.OpenFileDialog();
             OpenDialog.Filter = "Text documents (.txt)|*.txt";
             if (OpenDialog.ShowDialog() == true)
             {
-                path = OpenDialog.FileName;
+                return OpenDialog.FileName;
             }
+            return null;
         }
-        public void OpenDest()
+        public static string? OpenDest()
         {
             var SaveDialog = new Microsoft.Win32.SaveFileDialog();
             SaveDialog.Filter = "Text documents (.txt)|*.txt";
             if (SaveDialog.ShowDialog() == true)
             {
-                if (SaveDialog.FileName == Path)
-                {
-                    MessageBox.Show("Файл источник должен отличаться от файла назначения");
-                }
-                else
-                {
-                    outPath = SaveDialog.FileName;
-                }
+                return SaveDialog.FileName;
             }
+            return null;
+        }
+        public static void Starter(Parser parser)
+        {
+            if(parser.Path != parser.outPath)
+            {
+                MainCollection.parsers.Add(parser);
+                options.Close();
+                options = null;
+            }
+            else
+            {
+                MessageBox.Show("Файл источник не должен совпадать с выходным файлом.");
+            }
+        }
+    }
+
+    public class Parser : INotifyPropertyChanged
+    {
+        public string path, outPath, sights;
+        public int minLen = 0;
+        public bool setDelite, setReplace;
+        double progress;
+        public string Path { get { return path; } set { path = value; OnPropertyChanged("Path"); } }
+        public double Progress { get { return progress; } set { progress = value; OnPropertyChanged("Progress"); } }
+        public Parser()
+        {
+            Task.Run(() => Do_work());
         }
         private void Do_work() 
         {
@@ -77,7 +95,6 @@ namespace Cadwisetestwork1
             {
                 Progress = 100 * (double)file.Position / file.Length;
                 int tmp = file.ReadByte();
-                cnt++;
                 bool sight = false;
                 foreach (char i in sights)
                 {
@@ -87,17 +104,21 @@ namespace Cadwisetestwork1
                         break;
                     }
                 }
-                if (tmp == ' ' || sight || tmp == -1 || tmp == '\n')
+                if (tmp == ' ' || sight || tmp == -1 || tmp == '\n' || tmp == '\r')
                 {
-                    int tmpLen = minLen * mpl + 1;
-                    if (cnt < tmpLen && tmpLen > 0 && cnt != 1)
+                    int tmpLen = minLen * mpl;
+                    if (cnt < tmpLen && tmpLen > 0 && cnt != 0)
                     {
-                        opt.Seek(-cnt + 1, SeekOrigin.Current);
+                        opt.Seek(-cnt, SeekOrigin.Current);
                         isSeeked = false;
                     }
                     cnt = 0;
                 }
-                if (sight && setDelite)
+                else
+                {
+                    cnt++;
+                }
+                if (sight)
                 {
                     if (setReplace)
                     {

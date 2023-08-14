@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,10 +20,10 @@ namespace Cadwisetestwork1
     /// </summary>
     public partial class Options : Window
     {
-        public Options(ViewModelMain obj)
+        public Options()
         {
             InitializeComponent();
-            DataContext = obj;
+            DataContext = new ViewModelOptions();
         }
     }
 }

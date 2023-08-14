@@ -17,22 +17,10 @@ namespace Cadwisetestwork1
 {
     public class ViewModelMain: INotifyPropertyChanged
     {
-        Options wnd;
-        public int Len { get; set; } = 0;
-        bool deleteSet, replaceSet;
-        public bool DeleteSet { get { return deleteSet; } set { deleteSet = value; OnPropertyChanged("DeleteSet"); OnPropertyChanged("ReplaceSet"); } }
-        public bool ReplaceSet { get { return replaceSet & deleteSet; } set { replaceSet = value; } }
-        public string sights = ";.,:-";
-        public string Sights { get { return sights; } set { sights = value; OnPropertyChanged("Sights"); } }
-        public bool startSet = false;
-        public bool StartSet { get { return startSet; } set { startSet = value; OnPropertyChanged("StartSet"); } }
-        //public string? path = null, outpath = null;
-        //public string? Path { get { return path; } set { path = value; if (outpath != null) StartSet = true; else StartSet = false; OnPropertyChanged("Path"); } }
-        //public string? OutPath { get { return outpath; } set { outpath = value; if (path != null) StartSet = true; else StartSet = false; OnPropertyChanged("Path"); } }
-        public ObservableCollection<Parser> Parsers { get; set; }
+        public ObservableCollection<Parser> Parsers { get { return MainCollection.parsers; } set { MainCollection.parsers = value; } }
         public ViewModelMain()
         {
-            Parsers = new ObservableCollection<Parser>();
+
         }
         public RelayCommand Show
         {
@@ -40,44 +28,10 @@ namespace Cadwisetestwork1
             {
                 return new RelayCommand(obj =>
                 {
-                    wnd = new Options(this);
-                    wnd.Show();
+                    Common.Opener();
                 });
             }
         }
-        public RelayCommand Source
-        {
-            get
-            {
-                return new RelayCommand(obj =>
-                {
-                });
-            }
-        }
-        public RelayCommand OutFile
-        {
-            get
-            {
-                return new RelayCommand(obj =>
-                {
-                });
-            }
-        }
-        public RelayCommand Start
-        {
-            get
-            {
-                return new RelayCommand(obj =>
-                {
-
-                    Parsers.Add(parser);
-                    Path = OutPath = null;
-                    Parsers.Last().Start();
-                    wnd.Close();
-                });
-            }
-        }
-
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {

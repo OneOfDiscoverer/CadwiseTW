@@ -36,7 +36,7 @@ namespace Cadwisetestwork1
                         minLen = Len,
                         path = Path,
                         outPath = OutPath,
-                        setDelite = DeleteSet,
+                        setDelete = DeleteSet,
                         setReplace = ReplaceSet,
                         sights = Sights,
                     });

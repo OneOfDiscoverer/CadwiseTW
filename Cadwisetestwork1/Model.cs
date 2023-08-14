@@ -73,7 +73,7 @@ namespace Cadwisetestwork1
     {
         public string path, outPath, sights;
         public int minLen = 0;
-        public bool setDelite, setReplace;
+        public bool setDelete, setReplace;
         double progress;
         public string Path { get { return path; } set { path = value; OnPropertyChanged("Path"); } }
         public double Progress { get { return progress; } set { progress = value; OnPropertyChanged("Progress"); } }
@@ -83,18 +83,18 @@ namespace Cadwisetestwork1
         }
         private void Do_work() 
         {
-            int cnt = 0, mpl = 1;
+            int CharCounter = 0, UTFmultiplyer = 1;
             bool isSeeked = true;
-            using FileStream file = File.Open(path, FileMode.Open);
+            using FileStream InputFS = File.Open(path, FileMode.Open);
             if (File.Exists(outPath))
             {
                 File.Delete(outPath);
             }
-            using FileStream opt = File.Open(outPath, FileMode.Create);
+            using FileStream OutputFS = File.Open(outPath, FileMode.Create);
             while (true)
             {
-                Progress = 100 * (double)file.Position / file.Length;
-                int tmp = file.ReadByte();
+                Progress = 100 * (double)InputFS.Position / InputFS.Length;
+                int tmp = InputFS.ReadByte();
                 bool sight = false;
                 foreach (char i in sights)
                 {
@@ -106,40 +106,39 @@ namespace Cadwisetestwork1
                 }
                 if (tmp == ' ' || sight || tmp == -1 || tmp == '\n' || tmp == '\r')
                 {
-                    int tmpLen = minLen * mpl;
-                    if (cnt < tmpLen && tmpLen > 0 && cnt != 0)
+                    if (CharCounter < minLen * UTFmultiplyer && minLen * UTFmultiplyer > 0 && CharCounter != 0)
                     {
-                        opt.Seek(-cnt, SeekOrigin.Current);
+                        OutputFS.Seek(-CharCounter, SeekOrigin.Current);
                         isSeeked = false;
                     }
-                    cnt = 0;
+                    CharCounter = 0;
                 }
                 else
                 {
-                    cnt++;
+                    CharCounter++;
                 }
                 if (sight)
                 {
                     if (setReplace)
                     {
-                        opt.WriteByte((byte)' ');
+                        OutputFS.WriteByte((byte)' ');
                     }
                 }
                 else
                 {
                     if (isSeeked || tmp != ' ')
                     {
-                        opt.WriteByte((byte)tmp);
+                        OutputFS.WriteByte((byte)tmp);
                     }
                     isSeeked = true;
                 }
-                if (((byte)tmp & 0x80) == 0x00) mpl = 1;
-                else if (((byte)tmp & 0xE0) == 0xC0) mpl = 2;
-                else if (((byte)tmp & 0xF0) == 0xE0) mpl = 3;
-                else if (((byte)tmp & 0xF8) == 0xF0) mpl = 4;
+                if      (((byte)tmp & 0x80) == 0x00)    UTFmultiplyer = 1;
+                else if (((byte)tmp & 0xE0) == 0xC0)    UTFmultiplyer = 2;
+                else if (((byte)tmp & 0xF0) == 0xE0)    UTFmultiplyer = 3;
+                else if (((byte)tmp & 0xF8) == 0xF0)    UTFmultiplyer = 4;
                 if (tmp == -1)
                 {
-                    opt.SetLength(opt.Position - 1);
+                    OutputFS.SetLength(OutputFS.Position - 1);
                     return;
                 }
             }
